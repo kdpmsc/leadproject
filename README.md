@@ -54,7 +54,7 @@ Set the following environment variables for the provider you want to use.
 TWILIO_ACCOUNT_SID=ACxxxxxxxx
 TWILIO_AUTH_TOKEN=xxxxxxxx
 TWILIO_PHONE_NUMBER=+971500000000
-TWILIO_APP_BASE_URL=http://localhost:8080
+TWILIO_APP_BASE_URL=https://leadproject-59dl.onrender.com
 ```
 
 ### Plivo

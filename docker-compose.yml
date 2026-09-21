@@ -45,7 +45,7 @@ services:
       TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
       TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER:-}
-      TWILIO_APP_BASE_URL: ${TWILIO_APP_BASE_URL:-http://localhost:8080}
+      TWILIO_APP_BASE_URL: ${TWILIO_APP_BASE_URL:-https://leadproject-59dl.onrender.com}
       TWILIO_RECORD_CALL: ${TWILIO_RECORD_CALL:-false}
     ports:
       - "8080:8080"

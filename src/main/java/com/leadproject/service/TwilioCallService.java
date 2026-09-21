@@ -20,7 +20,7 @@ public class TwilioCallService implements VoiceCallService {
     @Value("${twilio.phone-number:+17372508034}")
     private String twilioPhoneNumber;
 
-    @Value("${twilio.app-base-url:http://localhost:8080}")
+    @Value("${twilio.app-base-url:https://leadproject-59dl.onrender.com}")
     private String appBaseUrl;
 
     @Value("${twilio.record-call:false}")
