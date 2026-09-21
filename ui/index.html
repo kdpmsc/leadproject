@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Lead Agent Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen app-shell">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="brand-badge">AI</div>
+        <h1>Lead Agent</h1>
+        <p class="subtitle">Real-estate sales qualification workspace</p>
+      </div>
+
+      <form id="authForm" class="form-grid">
+        <div class="form-field">
+          <label for="username">Username</label>
+          <input id="username" type="text" value="admin" placeholder="Enter username" />
+        </div>
+
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input id="password" type="password" value="admin123" placeholder="Enter password" />
+        </div>
+
+        <button type="submit" class="primary-btn">Login to dashboard</button>
+      </form>
+
+      <div id="loginAlert" class="alert"></div>
+    </div>
+  </div>
+
+  <div id="appScreen" class="dashboard-shell hidden">
+    <header class="topbar">
+      <h2>AI Lead Agent</h2>
+      <div class="header-actions">
+        <div class="user-pill" id="userLabel">Signed in as admin</div>
+        <button id="logoutBtn" class="ghost-btn">Logout</button>
+      </div>
+    </header>
+
+    <section id="dashboardStats" class="metrics"></section>
+
+    <div class="layout">
+      <main class="panel">
+        <div class="panel-header">
+          <h3>Lead table</h3>
+          <div class="header-actions">
+            <button id="exportExcelBtn" class="secondary-btn">Export Excel</button>
+            <button id="exportPdfBtn" class="ghost-btn">Export PDF</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <input id="searchInput" type="text" placeholder="Search by name, phone, location, source..." />
+          <select id="statusFilter">
+            <option value="ALL">Status: All</option>
+            <option value="NEW">NEW</option>
+            <option value="QUALIFIED">QUALIFIED</option>
+            <option value="FOLLOW_UP">FOLLOW_UP</option>
+            <option value="HOT">HOT</option>
+            <option value="WARM">WARM</option>
+            <option value="COLD">COLD</option>
+            <option value="NOT_SUITABLE">NOT_SUITABLE</option>
+          </select>
+          <select id="priorityFilter">
+            <option value="ALL">Priority: All</option>
+            <option value="HOT">HOT</option>
+            <option value="WARM">WARM</option>
+            <option value="COLD">COLD</option>
+            <option value="NEW">NEW</option>
+          </select>
+          <select id="sourceFilter">
+            <option value="ALL">Source: All</option>
+            <option value="website_form">website_form</option>
+            <option value="paid_ad">paid_ad</option>
+            <option value="whatsapp">whatsapp</option>
+            <option value="csv_import">csv_import</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Intent</th>
+                <th>Location</th>
+                <th>Summary</th>
+              </tr>
+            </thead>
+            <tbody id="leadTableBody"></tbody>
+          </table>
+        </div>
+      </main>
+
+      <aside class="stack">
+        <section class="panel lead-summary-box">
+          <div class="panel-header">
+            <h3>Lead details</h3>
+          </div>
+          <h4 id="selectedLeadName">Select a lead</h4>
+          <div id="leadMeta" class="muted">Lead metadata will appear here.</div>
+          <div id="keyGrid" class="key-grid"></div>
+        </section>
+
+        <section class="panel call-history-box">
+          <div class="panel-header">
+            <h3>Call history</h3>
+          </div>
+          <div id="callList" class="call-list"></div>
+        </section>
+
+        <section class="panel sales-brief-box">
+          <div class="panel-header">
+            <h3>Sales brief panel</h3>
+          </div>
+          <textarea id="briefText" placeholder="Sales brief content will appear here..."></textarea>
+          <div class="sales-actions">
+            <button id="generateBriefBtn" class="primary-btn">Generate brief</button>
+            <button id="exportBriefPdfBtn" class="secondary-btn">Save PDF</button>
+          </div>
+          <div id="briefOutput" class="output-box">No brief generated yet.</div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

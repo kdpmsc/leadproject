@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    container_name: leadproject-db
+    environment:
+      POSTGRES_DB: leadproject
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: leadproject-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@leadproject.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: leadproject-app
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/leadproject
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_DRIVER: org.postgresql.Driver
+      HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      JPA_HIBERNATE_DDL_AUTO: update
+      APP_ADMIN_USERNAME: admin
+      APP_ADMIN_PASSWORD: admin123
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-demo-key}
+      OPENAI_MODEL: gpt-4o-mini
+      VOICE_PROVIDER: ${VOICE_PROVIDER:-twilio}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER:-}
+      TWILIO_APP_BASE_URL: ${TWILIO_APP_BASE_URL:-http://localhost:8080}
+      TWILIO_RECORD_CALL: ${TWILIO_RECORD_CALL:-false}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

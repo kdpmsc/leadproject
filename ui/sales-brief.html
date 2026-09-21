@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Brief</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #edf3ff; margin: 0; padding: 30px; }
+    .container { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 14px; padding: 24px; }
+    h1 { color: #123a67; }
+    label { display: block; font-weight: 600; margin-top: 14px; }
+    textarea, input, button { width: 100%; box-sizing: border-box; margin-top: 8px; padding: 12px; border-radius: 8px; border: 1px solid #cfdaf3; }
+    button { background: #0c6cf2; color: #fff; border: none; cursor: pointer; font-weight: 700; }
+    .brief { margin-top: 20px; background: #f7fbff; border: 1px solid #dfeafc; border-radius: 12px; padding: 16px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sales Brief Generator</h1>
+    <label>Lead ID</label>
+    <input id="leadId" value="1" />
+
+    <label>Transcript</label>
+    <textarea id="transcript" rows="8">Customer: I am looking to buy a 2-bedroom apartment in Dubai Marina. Budget is around AED 2 million. I plan to purchase in 60 days. I am the decision maker. Please call me after 5 PM.</textarea>
+
+    <label>Summary</label>
+    <textarea id="summary" rows="4">Buyer interested in a 2-bedroom apartment in Dubai Marina. Budget AED 1.8M-2.2M. Wants to buy within 60 days. Prefers callback after 5 PM.</textarea>
+
+    <button id="generateBtn">Generate sales brief</button>
+    <div id="result" class="brief"></div>
+  </div>
+
+  <script>
+    const apiBase = 'http://localhost:8080/api/v1';
+    const auth = 'Basic ' + btoa('admin:admin123');
+
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      const payload = {
+        transcript: document.getElementById('transcript').value,
+        summary: document.getElementById('summary').value
+      };
+
+      const leadId = document.getElementById('leadId').value;
+
+      const res = await fetch(`${apiBase}/leads/${leadId}/sales-brief`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': auth
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
