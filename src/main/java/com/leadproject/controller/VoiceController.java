@@ -97,7 +97,7 @@ public class VoiceController {
     }
 
     private String buildQualificationTwiml(Long leadId, String leadName) {
-        String safeName = leadName == null || leadName.isBlank() ? "lead" : leadName;
+        String safeName = escapeXml(leadName == null || leadName.isBlank() ? "lead" : leadName);
 
         String action = appBaseUrl + "/api/v1/voice/answer?leadId=" + leadId + "&question=1";
         return """
@@ -109,7 +109,7 @@ public class VoiceController {
                     </Gather>
                     <Say language="en-US">We did not receive an answer. Goodbye.</Say>
                 </Response>
-                """.formatted(safeName, action);
+                """.formatted(safeName, escapeXmlAttribute(action));
     }
 
     private String nextQuestion(Long leadId, int question, String text) {
@@ -121,6 +121,18 @@ public class VoiceController {
                     </Gather>
                     <Say language="en-US">We did not receive an answer. Goodbye.</Say>
                 </Response>
-                """.formatted(action, text);
+                """.formatted(escapeXmlAttribute(action), escapeXml(text));
+    }
+
+    private String escapeXmlAttribute(String value) {
+        return escapeXml(value).replace("\"", "&quot;");
+    }
+
+    private String escapeXml(String value) {
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
     }
 }
