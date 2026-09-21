@@ -10,11 +10,15 @@ import com.leadproject.model.Lead;
 import com.leadproject.model.LeadCall;
 import com.leadproject.repository.LeadCallRepository;
 import com.leadproject.repository.LeadRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ScenarioService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ScenarioService.class);
 
     private final LeadRepository leadRepository;
     private final LeadCallRepository leadCallRepository;
@@ -38,6 +42,8 @@ public class ScenarioService {
     @Transactional
     public Map<String, Object> runLeadScenario(Long leadId, String phone, String leadName, String transcript,
                                               String playbookName, Long userId, String salesSummary) {
+        logger.info("Starting lead scenario: leadId={}, phone={}, playbook={}, userId={}",
+            leadId, phone, playbookName, userId);
         Lead lead = leadRepository.findById(leadId)
                 .orElseThrow(() -> new IllegalArgumentException("Lead not found: " + leadId));
 
@@ -97,6 +103,8 @@ public class ScenarioService {
         result.put("salesBriefPriority", salesBrief.get("priority"));
         result.put("salesBrief", salesBrief);
         result.put("updatedAt", LocalDateTime.now().toString());
+        logger.info("Lead scenario completed: leadId={}, scenarioStatus={}, leadStatus={}",
+            leadId, result.get("scenarioStatus"), result.get("leadStatus"));
         return result;
     }
 }

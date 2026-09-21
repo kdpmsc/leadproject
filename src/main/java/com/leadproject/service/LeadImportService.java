@@ -12,12 +12,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class LeadImportService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LeadImportService.class);
 
     private final LeadRepository leadRepository;
 
@@ -27,6 +31,8 @@ public class LeadImportService {
 
     @Transactional
     public LeadImportResponse importFromExcel(MultipartFile file) {
+        logger.info("Starting lead import: fileName={}, size={}",
+            file == null ? null : file.getOriginalFilename(), file == null ? 0 : file.getSize());
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Excel file is required");
         }
@@ -96,14 +102,18 @@ public class LeadImportService {
             throw new IllegalStateException("Failed to import Excel file: " + e.getMessage(), e);
         }
 
-        return LeadImportResponse.builder()
+        LeadImportResponse response = LeadImportResponse.builder()
                 .imported(imported)
                 .skipped(skipped)
                 .errors(errors)
                 .build();
+        logger.info("Lead import completed: imported={}, skipped={}, errors={}",
+            imported, skipped, errors.size());
+        return response;
     }
 
     public List<String> getRealEstateQuestions() {
+        logger.debug("Loading real-estate qualification questions");
         return List.of(
                 "Are you looking to buy, rent, sell, or invest?",
                 "Which areas and property types are you considering?",
@@ -115,6 +125,7 @@ public class LeadImportService {
     }
 
     public PhoneCallPlan buildPhoneCallPlan(String phone, String leadName, String source) {
+        logger.info("Building phone call plan: phone={}, leadName={}, source={}", phone, leadName, source);
         String normalizedPhone = phone == null ? "" : phone.trim();
         String safeName = leadName == null || leadName.isBlank() ? "lead" : leadName;
 

@@ -7,11 +7,15 @@ import com.leadproject.model.Lead;
 import com.leadproject.model.LeadCall;
 import com.leadproject.repository.LeadCallRepository;
 import com.leadproject.repository.LeadRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LeadCallService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LeadCallService.class);
 
     private final LeadCallRepository leadCallRepository;
     private final LeadRepository leadRepository;
@@ -23,6 +27,7 @@ public class LeadCallService {
 
     @Transactional
     public LeadCall createCall(Long leadId, String phone, String leadName) {
+        logger.info("Creating lead call: leadId={}, phone={}, leadName={}", leadId, phone, leadName);
         Lead lead = leadRepository.findById(leadId)
                 .orElseThrow(() -> new IllegalArgumentException("Lead not found: " + leadId));
 
@@ -33,11 +38,15 @@ public class LeadCallService {
         call.setStatus("PLACED");
         call.setCreatedAt(LocalDateTime.now());
         call.setUpdatedAt(LocalDateTime.now());
-        return leadCallRepository.save(call);
+        LeadCall savedCall = leadCallRepository.save(call);
+        logger.info("Lead call created: callId={}, leadId={}", savedCall.getId(), leadId);
+        return savedCall;
     }
 
     @Transactional
     public LeadCall updateCall(Long callId, String transcript, String recordingUrl, String summary, String status) {
+        logger.info("Updating lead call: callId={}, transcriptLength={}, status={}", callId,
+            transcript == null ? 0 : transcript.length(), status);
         LeadCall call = leadCallRepository.findById(callId)
                 .orElseThrow(() -> new IllegalArgumentException("Lead call not found: " + callId));
 
@@ -51,6 +60,7 @@ public class LeadCallService {
 
     @Transactional
     public LeadCall attachProviderCall(Long callId, String providerCallSid) {
+        logger.info("Attaching provider call: callId={}, providerCallSid={}", callId, providerCallSid);
         LeadCall call = leadCallRepository.findById(callId)
                 .orElseThrow(() -> new IllegalArgumentException("Lead call not found: " + callId));
         call.setProviderCallSid(providerCallSid);
@@ -61,6 +71,8 @@ public class LeadCallService {
 
     @Transactional
     public LeadCall appendAnswer(Long leadId, int questionNumber, String answer, String providerCallSid) {
+        logger.info("Appending call answer: leadId={}, question={}, providerCallSid={}, answerReceived={}",
+            leadId, questionNumber, providerCallSid, answer != null && !answer.isBlank());
         LeadCall call = providerCallSid == null || providerCallSid.isBlank()
                 ? leadCallRepository.findByLeadId(leadId).stream().reduce((first, second) -> second)
                 .orElseThrow(() -> new IllegalArgumentException("Lead call not found: " + leadId))
@@ -79,6 +91,8 @@ public class LeadCallService {
 
     @Transactional
     public LeadCall updateRecording(String providerCallSid, String recordingSid, String recordingUrl, String status) {
+        logger.info("Updating call recording: providerCallSid={}, recordingSid={}, status={}",
+            providerCallSid, recordingSid, status);
         LeadCall call = leadCallRepository.findByProviderCallSid(providerCallSid)
                 .orElseThrow(() -> new IllegalArgumentException("Lead call not found for provider SID: " + providerCallSid));
         call.setRecordingSid(recordingSid);
@@ -90,6 +104,7 @@ public class LeadCallService {
 
     @Transactional
     public void updateProviderStatus(String providerCallSid, String status) {
+        logger.info("Updating provider call status: providerCallSid={}, status={}", providerCallSid, status);
         leadCallRepository.findByProviderCallSid(providerCallSid).ifPresent(call -> {
             call.setStatus(status == null ? "UNKNOWN" : status.toUpperCase());
             call.setUpdatedAt(LocalDateTime.now());
@@ -99,6 +114,7 @@ public class LeadCallService {
 
     @Transactional(readOnly = true)
     public List<LeadCall> getCallHistory(Long leadId) {
+        logger.info("Loading call history: leadId={}", leadId);
         return leadCallRepository.findByLeadId(leadId);
     }
 }

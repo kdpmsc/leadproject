@@ -7,11 +7,15 @@ import java.util.Optional;
 import com.leadproject.dto.LeadCreateRequest;
 import com.leadproject.model.Lead;
 import com.leadproject.repository.LeadRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LeadService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LeadService.class);
 
     private final LeadRepository leadRepository;
 
@@ -21,6 +25,7 @@ public class LeadService {
 
     @Transactional
     public Lead createLead(LeadCreateRequest request) {
+        logger.info("Creating lead: phone={}, name={}", request.getPhone(), request.getName());
         String phone = normalizePhone(request.getPhone());
         if (leadRepository.existsByPhone(phone)) {
             throw new IllegalArgumentException("Lead with this phone number already exists");
@@ -47,11 +52,14 @@ public class LeadService {
         lead.setSummary("Awaiting qualification call");
         lead.setUpdatedAt(LocalDateTime.now());
 
-        return leadRepository.save(lead);
+        Lead savedLead = leadRepository.save(lead);
+        logger.info("Lead created: leadId={}, phone={}", savedLead.getId(), savedLead.getPhone());
+        return savedLead;
     }
 
     @Transactional(readOnly = true)
     public List<Lead> listLeads(String status, String scoreBand) {
+        logger.info("Listing leads: status={}, scoreBand={}", status, scoreBand);
         if (status != null && !status.isBlank()) {
             return leadRepository.findByStatus(status.toUpperCase());
         }
@@ -63,17 +71,20 @@ public class LeadService {
 
     @Transactional(readOnly = true)
     public Lead getLead(Long leadId) {
+        logger.info("Loading lead: leadId={}", leadId);
         return leadRepository.findById(leadId)
                 .orElseThrow(() -> new IllegalArgumentException("Lead not found: " + leadId));
     }
 
     @Transactional(readOnly = true)
     public Optional<Lead> findLead(Long leadId) {
+        logger.debug("Finding lead: leadId={}", leadId);
         return leadRepository.findById(leadId);
     }
 
     @Transactional(readOnly = true)
     public Lead getLeadByPhone(String phone) {
+        logger.info("Loading lead by phone: phone={}", phone);
         String normalizedPhone = normalizePhone(phone);
         return leadRepository.findByPhone(normalizedPhone)
                 .orElseThrow(() -> new IllegalArgumentException("Lead not found for phone: " + phone));
@@ -81,6 +92,7 @@ public class LeadService {
 
     @Transactional
     public Lead getOrCreateCallLead(String phone, String leadName) {
+        logger.info("Getting or creating call lead: phone={}, leadName={}", phone, leadName);
         String normalizedPhone = normalizePhone(phone);
         if (normalizedPhone.isBlank()) {
             throw new IllegalArgumentException("Phone is required to start a call");
@@ -104,6 +116,7 @@ public class LeadService {
 
     @Transactional
     public Lead assignLead(Long leadId, Long userId, String reason) {
+        logger.info("Assigning lead: leadId={}, userId={}", leadId, userId);
         Lead lead = getLead(leadId);
         lead.setOwnerId(userId);
         lead.setStatus("QUEUED");
@@ -116,6 +129,7 @@ public class LeadService {
     public Lead qualifyLead(Long leadId, String intent, String propertyType, String budgetRange,
                            String preferredLocation, String timeline, String decisionMaker,
                            String preferredCallbackTime, String qualificationNotes) {
+                logger.info("Qualifying lead: leadId={}, intent={}, propertyType={}", leadId, intent, propertyType);
         Lead lead = getLead(leadId);
 
         lead.setLeadIntent(intent);
@@ -155,11 +169,15 @@ public class LeadService {
         }
 
         lead.setUpdatedAt(LocalDateTime.now());
-        return leadRepository.save(lead);
+        Lead savedLead = leadRepository.save(lead);
+        logger.info("Lead qualified: leadId={}, score={}, scoreBand={}, status={}",
+            leadId, savedLead.getScore(), savedLead.getScoreBand(), savedLead.getStatus());
+        return savedLead;
     }
 
     @Transactional(readOnly = true)
     public Optional<Lead> findByPhone(String phone) {
+        logger.debug("Finding lead by phone: phone={}", phone);
         return leadRepository.findByPhone(phone);
     }
 
