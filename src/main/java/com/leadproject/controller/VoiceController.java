@@ -19,7 +19,7 @@ public class VoiceController {
     private final LeadService leadService;
     private final LeadCallService leadCallService;
 
-    @Value("${twilio.app-base-url:http://localhost:8080}")
+    @Value("${twilio.app-base-url:https://leadproject-59dl.onrender.com}")
     private String appBaseUrl;
 
     public VoiceController(LeadService leadService, LeadCallService leadCallService) {
