@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +28,9 @@ public class VoiceController {
         this.leadCallService = leadCallService;
     }
 
-    @GetMapping(value = "/voice/property-qualification", produces = MediaType.TEXT_XML_VALUE)
+        @RequestMapping(value = "/voice/property-qualification",
+            method = {RequestMethod.GET, RequestMethod.POST},
+            produces = MediaType.TEXT_XML_VALUE)
     public String propertyQualificationTwiml(
             @RequestParam(required = false) Long leadId,
             @RequestParam(required = false) String leadName) {
@@ -35,7 +38,9 @@ public class VoiceController {
         return buildQualificationTwiml(leadId, leadName);
     }
 
-    @GetMapping(value = "/voice/inbound", produces = MediaType.TEXT_XML_VALUE)
+        @RequestMapping(value = "/voice/inbound",
+            method = {RequestMethod.GET, RequestMethod.POST},
+            produces = MediaType.TEXT_XML_VALUE)
     public String inboundCallTwiml(
             @RequestParam(required = false) Long leadId,
             @RequestParam(required = false) String leadName) {
