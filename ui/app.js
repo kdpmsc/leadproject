@@ -7,7 +7,7 @@ const state = {
   filters: { search: '', status: 'ALL', priority: 'ALL', source: 'ALL' }
 };
 
-const apiBase = `${window.LEAD_API_BASE_URL || 'http://localhost:8080'}/api/v1`;
+const apiBase = `${window.LEAD_API_BASE_URL || 'https://leadproject-59dl.onrender.com'}/api/v1`;
 
 const elements = {
   loginScreen: document.getElementById('loginScreen'),
