@@ -87,10 +87,26 @@ The endpoint returns `{ "reply": "..." }` and does not start a Twilio call.
 
 ```bash
 docker compose up -d --build
-docker compose exec ollama ollama pull llama3.2:3b
 ```
 
-The model is stored in the `ollama_data` volume. The application reaches Ollama at `http://ollama:11434` inside the Compose network.
+The Ollama container automatically pulls `${OLLAMA_MODEL:-llama3.2:3b}` on startup and stores it in the `ollama_data` volume. The application reaches Ollama at `http://ollama:11434` inside the Compose network.
+
+### Render Ollama setup
+
+For the separate Render Ollama service, set:
+
+```text
+OLLAMA_MODEL=llama3.2:3b
+OLLAMA_HOST=0.0.0.0:$PORT
+```
+
+Use this start command so the model is installed before the service accepts requests:
+
+```bash
+sh -c 'ollama serve & pid=$!; until ollama list >/dev/null 2>&1; do sleep 2; done; ollama pull ${OLLAMA_MODEL:-llama3.2:3b}; wait $pid'
+```
+
+Attach a persistent disk at `/root/.ollama`; otherwise the model is lost after a Render restart or redeploy.
 
 ### Plivo
 

@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+ollama serve &
+OLLAMA_PID=$!
+
+until ollama list >/dev/null 2>&1; do
+    sleep 2
+done
+
+ollama pull "${OLLAMA_MODEL:-llama3.2:3b}"
+
+wait "$OLLAMA_PID"
