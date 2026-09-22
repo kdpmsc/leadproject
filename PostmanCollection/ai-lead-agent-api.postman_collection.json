@@ -1,0 +1,601 @@
+{
+  "info": {
+    "name": "AI Lead Agent API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api/v1", "type": "string" },
+    { "key": "username", "value": "admin", "type": "string" },
+    { "key": "password", "value": "admin123", "type": "string" },
+    { "key": "salesUsername", "value": "sales", "type": "string" },
+    { "key": "salesPassword", "value": "sales123", "type": "string" },
+    { "key": "complianceUsername", "value": "compliance", "type": "string" },
+    { "key": "compliancePassword", "value": "compliance123", "type": "string" },
+    { "key": "leadId", "value": "1", "type": "string" },
+    { "key": "leadPhone", "value": "+919876543210", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth Login",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Lead",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Aisha Rahman\",\n  \"phone\": \"{{leadPhone}}\",\n  \"email\": \"aisha@example.com\",\n  \"industry\": \"real_estate\",\n  \"source\": \"website\",\n  \"intent\": \"buy\",\n  \"propertyType\": \"2_bedroom_apartment\",\n  \"budgetRange\": \"AED 1.5M-2.0M\",\n  \"preferredLocation\": \"Dubai Marina\",\n  \"timeline\": \"within_60_days\",\n  \"decisionMaker\": \"yes\",\n  \"preferredCallbackTime\": \"evening\",\n  \"qualificationNotes\": \"Interested in a 2-bedroom apartment in Dubai Marina.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/leads",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "List Leads",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/leads",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Lead By ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/leads/{{leadId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads", "{{leadId}}"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Lead By Phone",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/leads/phone/{{leadPhone}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads", "phone", "{{leadPhone}}"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Assign Lead",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"2\",\n  \"reason\": \"Hot real-estate lead ready for property consultation\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/leads/{{leadId}}/assign",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads", "{{leadId}}", "assign"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Qualify Lead",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"intent\": \"buy\",\n  \"property_type\": \"2-bedroom apartment\",\n  \"budget_range\": \"AED 1.8M - 2.2M\",\n  \"preferred_location\": \"Dubai Marina\",\n  \"timeline\": \"within 60 days\",\n  \"decision_maker\": \"yes\",\n  \"preferred_callback_time\": \"5:00 PM\",\n  \"qualification_notes\": \"Interested in a 2BHK apartment in Dubai Marina. Budget AED 1.8M to 2.2M. Wants to buy within 60 days. Mortgage pre-approval in progress. Prefers call after 5pm.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/leads/{{leadId}}/qualify",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads", "{{leadId}}", "qualify"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Import Leads Excel",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "./sample-leads.xlsx"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/leads/import",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads", "import"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Generate Call Plan",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"{{leadPhone}}\",\n  \"leadName\": \"Aisha Rahman\",\n  \"source\": \"website_form\",\n  \"industry\": \"REAL_ESTATE\",\n  \"callType\": \"OUTBOUND\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/leads/call-plan",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads", "call-plan"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Place Voice Call",
+      "description": "Starts the existing predefined-question voice flow with type=iv, or the OpenAI conversational flow with type=aiagent.",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"{{leadPhone}}\",\n  \"leadName\": \"Aisha Rahman\",\n  \"leadId\": {{leadId}},\n  \"type\": \"iv\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/leads/call",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads", "call"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Start Call Flow",
+      "description": "Starts a voice call for the existing lead matched by phone. Use type=iv for predefined questions or type=aiagent for the OpenAI conversational flow. The leadId field is optional; the API resolves it from leadPhone.",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"phone\":\"{{leadPhone}}\",\"leadName\":\"Aisha Rahman\",\"type\":\"aiagent\"}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/call-flow/start",
+          "host": ["{{baseUrl}}"],
+          "path": ["call-flow", "start"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Run Call Flow Scenario",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"leadId\": {{leadId}},\n  \"phone\": \"{{leadPhone}}\",\n  \"leadName\": \"Aisha Rahman\",\n  \"transcript\": \"I am looking for a 2-bedroom apartment in Dubai Marina with a budget around AED 2M. I plan to buy within 60 days.\",\n  \"playbookName\": \"real-estate-playbook\",\n  \"userId\": 7,\n  \"salesSummary\": \"Sales follow-up after qualification\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/call-flow/scenario",
+          "host": ["{{baseUrl}}"],
+          "path": ["call-flow", "scenario"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Save Call Transcript",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transcript\": \"Prospect interested in 2-bedroom apartment in Dubai Marina. Budget AED 1.8M-2.2M. Ready to buy within 60 days.\",\n  \"recordingUrl\": \"https://example.com/recording.mp3\",\n  \"summary\": \"Strong buyer intent for a 2BHK unit in Dubai Marina. Follow up with pricing and inventory.\",\n  \"status\": \"COMPLETED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/calls/{{leadId}}/transcript",
+          "host": ["{{baseUrl}}"],
+          "path": ["calls", "{{leadId}}", "transcript"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Lead Call History",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/calls/lead/{{leadId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["calls", "lead", "{{leadId}}"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Calls Summary",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/calls/summary",
+          "host": ["{{baseUrl}}"],
+          "path": ["calls", "summary"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "AI Qualify Lead",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transcript\": \"Prospect wants a 2-bedroom apartment in Dubai Marina, budget AED 1.8M to 2.2M, ready to buy within 60 days.\",\n  \"playbook\": \"real-estate-playbook\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ai/qualify",
+          "host": ["{{baseUrl}}"],
+          "path": ["ai", "qualify"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Sales Brief",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transcript\": \"I am looking for a 2-bedroom apartment in Dubai Marina. Budget AED 2M. Ready to buy within 60 days.\",\n  \"summary\": \"Hot buyer interested in a 2-bedroom apartment.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/leads/{{leadId}}/sales-brief",
+          "host": ["{{baseUrl}}"],
+          "path": ["leads", "{{leadId}}", "sales-brief"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Campaign",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Dubai Marina Q4 Campaign\",\n  \"playbookVersionId\": 1,\n  \"callSchedule\": {\n    \"start\": \"09:00\",\n    \"end\": \"18:00\"\n  },\n  \"retryPolicy\": {\n    \"maxAttempts\": 3\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/campaigns",
+          "host": ["{{baseUrl}}"],
+          "path": ["campaigns"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "List Campaigns",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/campaigns",
+          "host": ["{{baseUrl}}"],
+          "path": ["campaigns"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Playbook",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"real-estate-playbook\",\n  \"industry\": \"real_estate\",\n  \"status\": \"DRAFT\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/playbooks",
+          "host": ["{{baseUrl}}"],
+          "path": ["playbooks"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "List Playbooks",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/playbooks",
+          "host": ["{{baseUrl}}"],
+          "path": ["playbooks"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Suppress Lead",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"{{leadPhone}}\",\n  \"reason\": \"opted_out\",\n  \"scope\": \"ALL_CAMPAIGNS\",\n  \"source\": \"phone_call\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/suppressions",
+          "host": ["{{baseUrl}}"],
+          "path": ["suppressions"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Compliance Call Log",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/compliance/call-log",
+          "host": ["{{baseUrl}}"],
+          "path": ["compliance", "call-log"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Dashboard",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["dashboard"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Voice Property Qualification",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/voice/property-qualification?leadId={{leadId}}&leadName=Aisha",
+          "host": ["{{baseUrl}}"],
+          "path": ["voice", "property-qualification"],
+          "query": [
+            {"key": "leadId", "value": "{{leadId}}"},
+            {"key": "leadName", "value": "Aisha"}
+          ]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Voice Inbound",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/voice/inbound?leadId={{leadId}}&leadName=Aisha",
+          "host": ["{{baseUrl}}"],
+          "path": ["voice", "inbound"],
+          "query": [
+            {"key": "leadId", "value": "{{leadId}}"},
+            {"key": "leadName", "value": "Aisha"}
+          ]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Voice Status Callback",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/x-www-form-urlencoded"}],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {"key": "CallUUID", "value": "1234567890"},
+            {"key": "CallStatus", "value": "answered"},
+            {"key": "To", "value": "+971500000000"},
+            {"key": "From", "value": "+971555123456"}
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/voice/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["voice", "status"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    }
+  ]
+}
