@@ -38,6 +38,11 @@ public class TwilioCallService implements VoiceCallService {
 
     @Override
     public Map<String, Object> placeCall(String toPhone, String leadName, Long leadId) {
+        return placeCall(toPhone, leadName, leadId, "iv");
+    }
+
+    @Override
+    public Map<String, Object> placeCall(String toPhone, String leadName, Long leadId, String type) {
         logger.info("Starting Twilio call: leadId={}, toPhone={}, leadName={}", leadId, toPhone, leadName);
         if (twilioPhoneNumber == null || twilioPhoneNumber.isBlank()) {
             logger.error("Twilio call rejected: phone number is not configured");
@@ -45,7 +50,11 @@ public class TwilioCallService implements VoiceCallService {
         }
 
         LeadCall leadCall = leadCallService.createCall(leadId, toPhone, leadName);
-        String callbackUrl = appBaseUrl + "/api/v1/voice/property-qualification?leadId=" + leadId + "&leadName=" + encode(leadName);
+        String mode = "aiagent".equalsIgnoreCase(type) ? "aiagent" : "iv";
+        String callbackPath = "aiagent".equals(mode)
+            ? "/api/v1/voice/ai-agent"
+            : "/api/v1/voice/property-qualification";
+        String callbackUrl = appBaseUrl + callbackPath + "?leadId=" + leadId + "&leadName=" + encode(leadName);
         String statusCallbackUrl = appBaseUrl + "/api/v1/voice/status";
         String recordingCallbackUrl = appBaseUrl + "/api/v1/voice/recording";
         logger.info("Twilio callback URLs prepared: answerUrl={}, statusUrl={}, recordingEnabled={}",
@@ -84,6 +93,7 @@ public class TwilioCallService implements VoiceCallService {
                 "fromPhone", twilioPhoneNumber,
                 "callSid", call.getSid(),
                 "provider", "twilio",
+                "type", mode,
                 "status", call.getStatus().toString(),
                 "createdAt", LocalDateTime.now().toString()
         );

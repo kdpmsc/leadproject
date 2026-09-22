@@ -31,8 +31,9 @@ public class CallFlowController {
     public ResponseEntity<Map<String, Object>> startCallFlow(@Valid @RequestBody Map<String, Object> payload) {
         String phone = String.valueOf(payload.get("phone"));
         String leadName = String.valueOf(payload.get("leadName"));
+        String type = String.valueOf(payload.getOrDefault("type", "iv"));
         Long leadId = resolveLeadId(payload.get("leadId"), phone, leadName);
-        return ResponseEntity.ok(voiceCallService.placeCall(phone, leadName, leadId));
+        return ResponseEntity.ok(voiceCallService.placeCall(phone, leadName, leadId, type));
     }
 
     private Long resolveLeadId(Object requestedLeadId, String phone, String leadName) {

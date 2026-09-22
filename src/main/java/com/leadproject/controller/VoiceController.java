@@ -2,6 +2,7 @@ package com.leadproject.controller;
 
 import com.leadproject.service.LeadService;
 import com.leadproject.service.LeadCallService;
+import com.leadproject.service.AiVoiceAgentService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,16 @@ public class VoiceController {
 
     private final LeadService leadService;
     private final LeadCallService leadCallService;
+    private final AiVoiceAgentService aiVoiceAgentService;
 
     @Value("${twilio.app-base-url:https://leadproject-59dl.onrender.com}")
     private String appBaseUrl;
 
-    public VoiceController(LeadService leadService, LeadCallService leadCallService) {
+    public VoiceController(LeadService leadService, LeadCallService leadCallService,
+                           AiVoiceAgentService aiVoiceAgentService) {
         this.leadService = leadService;
         this.leadCallService = leadCallService;
+        this.aiVoiceAgentService = aiVoiceAgentService;
     }
 
         @RequestMapping(value = "/voice/property-qualification",
@@ -46,6 +50,25 @@ public class VoiceController {
             @RequestParam(required = false) String leadName) {
 
         return buildQualificationTwiml(leadId, leadName);
+    }
+
+    @RequestMapping(value = "/voice/ai-agent",
+            method = {RequestMethod.GET, RequestMethod.POST},
+            produces = MediaType.TEXT_XML_VALUE)
+    public String startAiAgent(
+            @RequestParam Long leadId,
+            @RequestParam(required = false) String leadName,
+            @RequestParam(required = false) String CallSid) {
+        return processAiTurn(leadId, leadName, null, CallSid);
+    }
+
+    @PostMapping(value = "/voice/ai-agent/turn", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+            produces = MediaType.TEXT_XML_VALUE)
+    public String handleAiAgentTurn(
+            @RequestParam Long leadId,
+            @RequestParam(required = false, defaultValue = "") String SpeechResult,
+            @RequestParam(required = false) String CallSid) {
+        return processAiTurn(leadId, null, SpeechResult, CallSid);
     }
 
     @PostMapping(value = "/voice/status", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -90,6 +113,41 @@ public class VoiceController {
                     <Response><Say>Thank you. Our property consultant will contact you shortly. Goodbye.</Say></Response>
                     """;
         };
+    }
+
+    private String processAiTurn(Long leadId, String leadName, String speechResult, String callSid) {
+        if (speechResult != null && !speechResult.isBlank()) {
+            leadCallService.appendAgentTurn(leadId, callSid, "user", speechResult);
+        }
+
+        String conversation = leadCallService.getConversation(leadId, callSid);
+        String response = aiVoiceAgentService.respond(leadName, conversation);
+        leadCallService.appendAgentTurn(leadId, callSid, "assistant", response);
+
+        if (isOptOut(speechResult)) {
+            return "<Response><Say>Understood. We will not contact you again. Goodbye.</Say></Response>";
+        }
+
+        String action = appBaseUrl + "/api/v1/voice/ai-agent/turn?leadId=" + leadId
+            + (callSid == null || callSid.isBlank() ? "" : "&CallSid=" + callSid);
+        return """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <Response>
+                    <Gather input="speech" action="%s" method="POST" language="en-US" speechTimeout="auto">
+                        <Say language="en-US">%s</Say>
+                    </Gather>
+                    <Say language="en-US">We did not receive an answer. Goodbye.</Say>
+                </Response>
+                """.formatted(escapeXmlAttribute(action), escapeXml(response));
+    }
+
+    private boolean isOptOut(String speechResult) {
+        if (speechResult == null) {
+            return false;
+        }
+        String normalized = speechResult.toLowerCase();
+        return normalized.contains("stop") || normalized.contains("do not call")
+                || normalized.contains("don't call") || normalized.contains("opt out");
     }
 
     @PostMapping(value = "/voice/recording", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)

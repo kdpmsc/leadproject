@@ -28,7 +28,7 @@ http://localhost:8080/swagger-ui.html
 
 1. Upload leads: `POST /api/v1/leads/import`
 2. Generate call plan: `POST /api/v1/leads/call-plan`
-3. Start Twilio call: `POST /api/v1/leads/call`
+3. Start Twilio call: `POST /api/v1/leads/call` with `type` set to `iv` for the fixed questions or `aiagent` for the OpenAI conversation
 4. Save transcript: `POST /api/v1/calls/{callId}/transcript`
 5. Qualify lead: `POST /api/v1/leads/{leadId}/qualify`
 6. Create sales brief: `POST /api/v1/leads/{leadId}/sales-brief`
@@ -55,7 +55,22 @@ TWILIO_ACCOUNT_SID=ACxxxxxxxx
 TWILIO_AUTH_TOKEN=xxxxxxxx
 TWILIO_PHONE_NUMBER=+971500000000
 TWILIO_APP_BASE_URL=https://leadproject-59dl.onrender.com
+OPENAI_API_KEY=sk-xxxxxxxx
+OPENAI_MODEL=gpt-4o-mini
 ```
+
+The AI voice mode uses Twilio speech gathering and OpenAI one turn at a time. Example request:
+
+```json
+{
+	"phone": "+971500000000",
+	"leadName": "Aisha Rahman",
+	"leadId": 42,
+	"type": "aiagent"
+}
+```
+
+Use `type: "iv"` or omit the property to keep the existing predefined-question flow.
 
 ### Plivo
 

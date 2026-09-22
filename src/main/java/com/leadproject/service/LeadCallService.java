@@ -89,6 +89,33 @@ public class LeadCallService {
         return leadCallRepository.save(call);
     }
 
+    @Transactional(readOnly = true)
+    public String getConversation(Long leadId, String providerCallSid) {
+        LeadCall call = findCall(leadId, providerCallSid);
+        return call.getConversation() == null ? "" : call.getConversation();
+    }
+
+    @Transactional
+    public LeadCall appendAgentTurn(Long leadId, String providerCallSid, String role, String text) {
+        LeadCall call = findCall(leadId, providerCallSid);
+        String entry = role.toUpperCase() + ": " + text;
+        String conversation = call.getConversation();
+        call.setConversation(conversation == null || conversation.isBlank()
+                ? entry
+                : conversation + "\n" + entry);
+        call.setTranscript(call.getConversation());
+        call.setUpdatedAt(LocalDateTime.now());
+        return leadCallRepository.save(call);
+    }
+
+    private LeadCall findCall(Long leadId, String providerCallSid) {
+        return providerCallSid == null || providerCallSid.isBlank()
+                ? leadCallRepository.findByLeadId(leadId).stream().reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalArgumentException("Lead call not found: " + leadId))
+                : leadCallRepository.findByProviderCallSid(providerCallSid)
+                .orElseThrow(() -> new IllegalArgumentException("Lead call not found for provider SID: " + providerCallSid));
+    }
+
     @Transactional
     public LeadCall updateRecording(String providerCallSid, String recordingSid, String recordingUrl, String status) {
         logger.info("Updating call recording: providerCallSid={}, recordingSid={}, status={}",

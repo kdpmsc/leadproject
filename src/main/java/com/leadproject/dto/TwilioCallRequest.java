@@ -15,4 +15,6 @@ public class TwilioCallRequest {
 
     @NotNull
     private Long leadId;
+
+    private String type = "iv";
 }

@@ -130,6 +130,7 @@ public class LeadController {
 
     @PostMapping("/leads/call")
     public ResponseEntity<Map<String, Object>> callLead(@Valid @RequestBody TwilioCallRequest request) {
-        return ResponseEntity.ok(voiceCallService.placeCall(request.getPhone(), request.getLeadName(), request.getLeadId()));
+        return ResponseEntity.ok(voiceCallService.placeCall(
+            request.getPhone(), request.getLeadName(), request.getLeadId(), request.getType()));
     }
 }
