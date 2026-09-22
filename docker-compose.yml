@@ -1,5 +1,12 @@
-version: '3.8'
 services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: leadproject-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
   postgres:
     image: postgres:16
     container_name: leadproject-db
@@ -30,6 +37,7 @@ services:
     container_name: leadproject-app
     depends_on:
       - postgres
+      - ollama
     environment:
       DATABASE_URL: jdbc:postgresql://postgres:5432/leadproject
       DATABASE_USER: postgres
@@ -39,8 +47,8 @@ services:
       JPA_HIBERNATE_DDL_AUTO: update
       APP_ADMIN_USERNAME: admin
       APP_ADMIN_PASSWORD: admin123
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-demo-key}
-      OPENAI_MODEL: gpt-4o-mini
+      SPRING_AI_OLLAMA_BASE_URL: http://ollama:11434
+      SPRING_AI_OLLAMA_CHAT_OPTIONS_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
       VOICE_PROVIDER: ${VOICE_PROVIDER:-twilio}
       TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
@@ -52,3 +60,4 @@ services:
 
 volumes:
   postgres_data:
+  ollama_data:

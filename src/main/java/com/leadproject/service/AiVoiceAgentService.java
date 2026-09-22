@@ -42,7 +42,32 @@ public class AiVoiceAgentService {
                 .content();
 
         if (response == null || response.isBlank()) {
-            throw new IllegalStateException("OpenAI returned an empty voice-agent response");
+            throw new IllegalStateException("AI model returned an empty voice-agent response");
+        }
+        return response.trim();
+    }
+
+    public String chat(String message, String conversation) {
+        String prompt = """
+                Conversation so far:
+                %s
+
+                User message:
+                %s
+
+                Reply naturally and helpfully. Keep the response concise.
+                """.formatted(
+                conversation == null || conversation.isBlank() ? "(new conversation)" : conversation,
+                message);
+
+        String response = chatClient.prompt()
+                .system("You are a helpful local AI assistant for development testing.")
+                .user(prompt)
+                .call()
+                .content();
+
+        if (response == null || response.isBlank()) {
+            throw new IllegalStateException("AI model returned an empty chat response");
         }
         return response.trim();
     }

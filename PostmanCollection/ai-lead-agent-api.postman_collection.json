@@ -339,6 +339,30 @@
       }
     },
     {
+      "name": "Local Ollama Chat",
+      "description": "Sends a message to the local Ollama model without starting a Twilio call.",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"What information should I collect from a Dubai property buyer?\",\n  \"conversation\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/ai/chat",
+          "host": ["{{baseUrl}}"],
+          "path": ["ai", "chat"]
+        },
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {"key": "username", "value": "{{username}}", "type": "string"},
+            {"key": "password", "value": "{{password}}", "type": "string"}
+          ]
+        }
+      }
+    },
+    {
       "name": "AI Qualify Lead",
       "request": {
         "method": "POST",

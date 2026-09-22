@@ -55,11 +55,11 @@ TWILIO_ACCOUNT_SID=ACxxxxxxxx
 TWILIO_AUTH_TOKEN=xxxxxxxx
 TWILIO_PHONE_NUMBER=+971500000000
 TWILIO_APP_BASE_URL=https://leadproject-59dl.onrender.com
-OPENAI_API_KEY=sk-xxxxxxxx
-OPENAI_MODEL=gpt-4o-mini
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2:3b
 ```
 
-The AI voice mode uses Twilio speech gathering and OpenAI one turn at a time. Example request:
+The AI voice mode uses Twilio speech gathering and a local Ollama model one turn at a time. Example request:
 
 ```json
 {
@@ -71,6 +71,26 @@ The AI voice mode uses Twilio speech gathering and OpenAI one turn at a time. Ex
 ```
 
 Use `type: "iv"` or omit the property to keep the existing predefined-question flow.
+
+For local Ollama chat testing, call `POST /api/v1/ai/chat` with Basic Auth:
+
+```json
+{
+	"message": "What information should I collect from a Dubai property buyer?",
+	"conversation": ""
+}
+```
+
+The endpoint returns `{ "reply": "..." }` and does not start a Twilio call.
+
+### Docker Compose AI setup
+
+```bash
+docker compose up -d --build
+docker compose exec ollama ollama pull llama3.2:3b
+```
+
+The model is stored in the `ollama_data` volume. The application reaches Ollama at `http://ollama:11434` inside the Compose network.
 
 ### Plivo
 
